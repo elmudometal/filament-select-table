@@ -1,29 +1,27 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "elmudo-dev/filament-select-table",
+    "description": "This package is an extension of select to allow selecting from a table",
     "keywords": [
-        ":vendor_name",
+        "Elmudo-Dev",
         "laravel",
-        ":package_slug"
+        "filament-select-table"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/elmudometal/filament-select-table",
     "support": {
-        "issues": "https://github.com/:vendor_slug/:package_slug/issues",
-        "source": "https://github.com/:vendor_slug/:package_slug"
+        "issues": "https://github.com/elmudometal/filament-select-table/issues",
+        "source": "https://github.com/elmudometal/filament-select-table"
     },
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Hernan Soto",
+            "email": "elmudometal@gmail.com",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.1",
-        "filament/filament": "^3.0",
         "filament/forms": "^3.0",
-        "filament/tables": "^3.0",
         "spatie/laravel-package-tools": "^1.15.0"
     },
     "require-dev": {
@@ -41,13 +39,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "ElmudoDev\\FilamentSelectTable\\": "src/",
+            "ElmudoDev\\FilamentSelectTable\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/"
+            "ElmudoDev\\FilamentSelectTable\\Tests\\": "tests/"
         }
     },
     "scripts": {
@@ -67,10 +65,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "ElmudoDev\\FilamentSelectTable\\FilamentSelectTableServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "FilamentSelectTable": "ElmudoDev\\FilamentSelectTable\\Facades\\FilamentSelectTable"
             }
         }
     },

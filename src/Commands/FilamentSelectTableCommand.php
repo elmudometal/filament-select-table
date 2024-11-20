@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace ElmudoDev\FilamentSelectTable\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class FilamentSelectTableCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'filament-select-table';
 
     public $description = 'My command';
 
