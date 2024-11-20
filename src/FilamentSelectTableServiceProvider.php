@@ -2,6 +2,8 @@
 
 namespace ElmudoDev\FilamentSelectTable;
 
+use ElmudoDev\FilamentSelectTable\Commands\FilamentSelectTableCommand;
+use ElmudoDev\FilamentSelectTable\Testing\TestsFilamentSelectTable;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Asset;
 use Filament\Support\Assets\Css;
@@ -13,8 +15,6 @@ use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use ElmudoDev\FilamentSelectTable\Commands\FilamentSelectTableCommand;
-use ElmudoDev\FilamentSelectTable\Testing\TestsFilamentSelectTable;
 
 class FilamentSelectTableServiceProvider extends PackageServiceProvider
 {
