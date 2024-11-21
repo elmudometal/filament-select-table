@@ -2,6 +2,7 @@
 
 namespace ElmudoDev\FilamentSelectTable\Forms;
 
+use Closure;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -12,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
@@ -21,47 +23,20 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
     use InteractsWithForms;
     use InteractsWithTable;
 
+    protected string | Htmlable | Closure | null $labelRelationshipAdd;
+    protected string | Htmlable | Closure | null $titleRelationshipTable;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->registerListeners([
-            'select-table-aaaaaaa2' => [
+            'filament-select-table' => [
                 function (FilamentSelectTable $component, $statePath, array $records) {
                     $component->state($records);
-                    Log::warning('sdsdsds2');
                 }],
         ]);
 
-    }
-
-    protected function getTableQuery()
-    {
-        // Define aquí la consulta para la tabla, por ejemplo, todos los usuarios
-        return \App\Models\User::query();
-    }
-
-    protected function getTableColumns(): array
-    {
-        return [
-            CheckboxColumn::make('is_admin'),
-            TextColumn::make('name')->label('Nombre')->sortable(),
-            TextColumn::make('email')->label('Correo')->sortable(),
-            // Agrega más columnas según tus necesidades
-        ];
-    }
-
-    protected function getTableFilters(): array
-    {
-        return [
-            SelectFilter::make('estado')
-                ->label('Estado')
-                ->options([
-                    'activo' => 'Activo',
-                    'inactivo' => 'Inactivo',
-                ]),
-            // Añade otros filtros necesarios
-        ];
     }
 
     public function getCreateOptionAction(): ?Action
@@ -73,14 +48,17 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
         $action = Action::make($this->getCreateOptionActionName())
             ->modalContent(
                 function (FilamentSelectTable $component) {
-                    $componentName = 'user-table';
+                    $componentName = \ElmudoDev\FilamentSelectTable\FilamentSelectTable::class;
 
                     return new HtmlString(
                         Blade::render(
-                            string: "@livewire('{$componentName}',  ['statePath' => \$statePath, 'ownerRecord' => \$ownerRecord, 'existingRecords' => \$existingRecords, 'componentId' => \$componentId])",
+                            string: "@livewire('{$componentName}',  ['statePath' => \$statePath, 'ownerRecord' => \$ownerRecord, 'labelRelationshipAdd'=> \$labelRelationshipAdd, 'titleRelationshipTable'=> \$titleRelationshipTable, 'relationship' => \$relationship, 'existingRecords' => \$existingRecords, 'componentId' => \$componentId])",
                             data: [
                                 'statePath' => $component->getStatePath(),
                                 'ownerRecord' => $component->getRecord(),
+                                'labelRelationshipAdd' => $component->getLabelRelationshipAdd(),
+                                'titleRelationshipTable' => $component->titleRelationshipTable,
+                                'relationship' => $component->getRelationship() ? $component->getRelationshipName() : null,
                                 'existingRecords' => collect($component->getState())->pluck('id')->toArray(),
                                 'componentId' => $component->getLivewire()->getId(),
                             ]
@@ -88,15 +66,12 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
                     );
                 }
             )
-            //->modalSubmitAction(fn(array $data) => dd($data))
-            ->action(function (array $data) {
-                dd($data, 'aaa');
-            })
+            ->modalSubmitAction(fn () => false)
             ->modalCancelAction(fn () => false)
             ->color('gray')
             ->icon(FilamentIcon::resolve('forms::components.select.actions.create-option') ?? 'heroicon-m-plus')
             ->iconButton()
-            ->modalHeading($this->getCreateOptionModalHeading() ?? __('filament-forms::components.select.actions.create_option.modal.heading'));
+            ->modalHeading($this->titleRelationshipTable);
 
         if ($this->modifyManageOptionActionsUsing) {
             $action = $this->evaluate($this->modifyManageOptionActionsUsing, [
@@ -111,5 +86,40 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
         }
 
         return $action;
+    }
+
+    public function labelRelationshipAdd(string | Htmlable | Closure | null $labelRelationshipAdd): static
+    {
+        $this->labelRelationshipAdd = $labelRelationshipAdd;
+
+        return $this;
+    }
+
+    public function titleRelationshipTable(string | Htmlable | Closure | null $titleRelationshipTable): static
+    {
+        $this->titleRelationshipTable = $titleRelationshipTable;
+
+        return $this;
+    }
+
+    public function getLabelRelationshipAdd(): string | Htmlable | null
+    {
+        if ($this->labelRelationshipAdd === null && $this->hasRelationship()) {
+            $labelRelationshipAdd = (string) str($this->getRelationshipName())
+                ->before('.')
+                ->kebab()
+                ->replace(['-', '_'], ' ')
+                ->ucfirst();
+
+            return $labelRelationshipAdd;
+        }
+
+        $labelRelationshipAdd = (string) str($this->labelRelationshipAdd)
+            ->afterLast('.')
+            ->kebab()
+            ->replace(['-', '_'], ' ')
+            ->ucfirst();
+
+        return $labelRelationshipAdd;
     }
 }

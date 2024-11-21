@@ -9,6 +9,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 
@@ -23,14 +24,20 @@ class FilamentSelectTable extends Component implements HasForms, HasTable
 
     public Model $ownerRecord;
 
+    public string $labelRelationshipAdd;
+
+    public string $titleRelationshipTable;
+
+    public string | Closure | null $relationship = null;
+
     public mixed $existingRecords;
 
     public ?string $componentId = null;
 
+
     protected function getTableQuery()
     {
-        // Define aquí la consulta para la tabla, por ejemplo, todos los usuarios
-        return \App\Models\User::query();
+        return $this->ownerRecord->{$this->relationship}()->getQuery();
     }
 
     protected function getTableColumns(): array
@@ -44,22 +51,18 @@ class FilamentSelectTable extends Component implements HasForms, HasTable
 
     public function makeTable(): Table
     {
-        return $this->makeBaseTable()
-            ->query(fn ($query) => \App\Models\User::query());
-    }
-
-    public function checkIfRecordIsSelectableUsing()
-    {
-        return false;
+        return $this
+            ->makeBaseTable();
     }
 
     protected function getTableHeaderActions(): array
     {
+
         return [
-            BulkAction::make('delete')
-                ->label('agregar')
+            BulkAction::make('filament-select-add-relationship')
+                ->label($this->labelRelationshipAdd)
                 ->action(function (Component $livewire, $records) {
-                    $livewire->dispatch('select-table-aaaaaaa', record_ids: $records->pluck('id'));
+                    $livewire->dispatch('filament-select-table', record_ids: $records->pluck('id'));
 
                     $livewire
                         ->dispatch('close-modal', id: $this->componentId . '-form-component-action');
