@@ -9,7 +9,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 
@@ -33,7 +32,6 @@ class FilamentSelectTable extends Component implements HasForms, HasTable
     public mixed $existingRecords;
 
     public ?string $componentId = null;
-
 
     protected function getTableQuery()
     {

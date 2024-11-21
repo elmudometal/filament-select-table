@@ -8,14 +8,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Support\Facades\FilamentIcon;
-use Filament\Tables\Columns\CheckboxColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
-use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 
 class FilamentSelectTable extends Select implements HasForms, HasTable
@@ -24,6 +20,7 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
     use InteractsWithTable;
 
     protected string | Htmlable | Closure | null $labelRelationshipAdd;
+
     protected string | Htmlable | Closure | null $titleRelationshipTable;
 
     protected function setUp(): void
