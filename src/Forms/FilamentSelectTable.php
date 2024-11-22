@@ -7,7 +7,7 @@ use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Support\Facades\FilamentIcon;
+use Filament\Tables\Columns\Component;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Contracts\Support\Htmlable;
@@ -23,16 +23,36 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
 
     protected string | Htmlable | Closure | null $titleRelationshipTable;
 
+    protected array | Closure | null $schema;
+
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->default([])
+            ->extraAlpineAttributes([
+                'x-on:filament-select-table.window' => '($event) => $wire.dispatchFormEvent(\'filament-select-table\', \'$getStatePath()\', $event.detail.record_ids)',
+            ]);
+
+        $this->afterStateHydrated(static function (FilamentSelectTable $component, $state) {
+            if (is_array($state)) {
+                return;
+            }
+
+            $component->state([]);
+        });
+
         $this->registerListeners([
             'filament-select-table' => [
-                function (FilamentSelectTable $component, $statePath, array $records) {
+                function (FilamentSelectTable $component, $statePath, array | int $records) {
                     $component->state($records);
+                    $component->callAfterStateUpdated();
                 }],
         ]);
+
+        $this->mutateDehydratedStateUsing(static function (?array $state): array {
+            return array_values($state ?? []);
+        });
 
     }
 
@@ -49,14 +69,16 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
 
                     return new HtmlString(
                         Blade::render(
-                            string: "@livewire('{$componentName}',  ['statePath' => \$statePath, 'ownerRecord' => \$ownerRecord, 'labelRelationshipAdd'=> \$labelRelationshipAdd, 'titleRelationshipTable'=> \$titleRelationshipTable, 'relationship' => \$relationship, 'existingRecords' => \$existingRecords, 'componentId' => \$componentId])",
+                            string: "@livewire('{$componentName}',  ['statePath' => \$statePath, 'ownerRecord' => \$ownerRecord, 'labelRelationshipAdd'=> \$labelRelationshipAdd, 'titleRelationshipTable'=> \$titleRelationshipTable, 'relationship' => \$relationship, 'schema' => \$schema, 'isMultiple'=>\$isMultiple, 'selectedRecords' => \$selectedRecords, 'componentId' => \$componentId])",
                             data: [
                                 'statePath' => $component->getStatePath(),
                                 'ownerRecord' => $component->getRecord(),
                                 'labelRelationshipAdd' => $component->getLabelRelationshipAdd(),
                                 'titleRelationshipTable' => $component->titleRelationshipTable,
-                                'relationship' => $component->getRelationship() ? $component->getRelationshipName() : null,
-                                'existingRecords' => collect($component->getState())->pluck('id')->toArray(),
+                                'relationship' => $component->getRelationship() ? $component->getRelationship()->getModel() : null,
+                                'schema' => $this->evaluate($component->schema),
+                                'isMultiple' => $component->isMultiple,
+                                'selectedRecords' => $component->getState(),
                                 'componentId' => $component->getLivewire()->getId(),
                             ]
                         )
@@ -66,7 +88,7 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
             ->modalSubmitAction(fn () => false)
             ->modalCancelAction(fn () => false)
             ->color('gray')
-            ->icon(FilamentIcon::resolve('forms::components.select.actions.create-option') ?? 'heroicon-m-plus')
+            ->icon('heroicon-m-plus')
             ->iconButton()
             ->modalHeading($this->titleRelationshipTable);
 
@@ -95,6 +117,16 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
     public function titleRelationshipTable(string | Htmlable | Closure | null $titleRelationshipTable): static
     {
         $this->titleRelationshipTable = $titleRelationshipTable;
+
+        return $this;
+    }
+
+    /**
+     * @param  array<Component> | Closure | null  $schema
+     */
+    public function schema(array | Closure | null $schema): static
+    {
+        $this->schema = $schema;
 
         return $this;
     }
