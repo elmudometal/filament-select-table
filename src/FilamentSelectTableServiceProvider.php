@@ -4,13 +4,8 @@ namespace ElmudoDev\FilamentSelectTable;
 
 use ElmudoDev\FilamentSelectTable\Commands\FilamentSelectTableCommand;
 use ElmudoDev\FilamentSelectTable\Testing\TestsFilamentSelectTable;
-use Filament\Support\Assets\AlpineComponent;
-use Filament\Support\Assets\Asset;
-use Filament\Support\Assets\Css;
-use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentIcon;
-use Illuminate\Filesystem\Filesystem;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -33,21 +28,8 @@ class FilamentSelectTableServiceProvider extends PackageServiceProvider
             ->hasCommands($this->getCommands())
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
-                    ->publishConfigFile()
-                    ->publishMigrations()
-                    ->askToRunMigrations()
                     ->askToStarRepoOnGitHub('elmudo-dev/filament-select-table');
             });
-
-        $configFileName = $package->shortName();
-
-        if (file_exists($package->basePath("/../config/{$configFileName}.php"))) {
-            $package->hasConfigFile();
-        }
-
-        if (file_exists($package->basePath('/../database/migrations'))) {
-            $package->hasMigrations($this->getMigrations());
-        }
 
         if (file_exists($package->basePath('/../resources/lang'))) {
             $package->hasTranslations();
@@ -62,11 +44,7 @@ class FilamentSelectTableServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        // Asset Registration
-        FilamentAsset::register(
-            $this->getAssets(),
-            $this->getAssetPackageName()
-        );
+        $this->registerLivewireComponents();
 
         FilamentAsset::registerScriptData(
             $this->getScriptData(),
@@ -76,34 +54,18 @@ class FilamentSelectTableServiceProvider extends PackageServiceProvider
         // Icon Registration
         FilamentIcon::register($this->getIcons());
 
-        // Handle Stubs
-        if (app()->runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__ . '/../stubs/') as $file) {
-                $this->publishes([
-                    $file->getRealPath() => base_path("stubs/filament-select-table/{$file->getFilename()}"),
-                ], 'filament-select-table-stubs');
-            }
-        }
-
         // Testing
         Testable::mixin(new TestsFilamentSelectTable);
+    }
+
+    private function registerLivewireComponents(): void
+    {
+        \Livewire\Livewire::component('elmudo-dev::filament-select-table', FilamentSelectTable::class);
     }
 
     protected function getAssetPackageName(): ?string
     {
         return 'elmudo-dev/filament-select-table';
-    }
-
-    /**
-     * @return array<Asset>
-     */
-    protected function getAssets(): array
-    {
-        return [
-            // AlpineComponent::make('filament-select-table', __DIR__ . '/../resources/dist/components/filament-select-table.js'),
-            Css::make('filament-select-table-styles', __DIR__ . '/../resources/dist/filament-select-table.css'),
-            Js::make('filament-select-table-scripts', __DIR__ . '/../resources/dist/filament-select-table.js'),
-        ];
     }
 
     /**
@@ -138,15 +100,5 @@ class FilamentSelectTableServiceProvider extends PackageServiceProvider
     protected function getScriptData(): array
     {
         return [];
-    }
-
-    /**
-     * @return array<string>
-     */
-    protected function getMigrations(): array
-    {
-        return [
-            'create_filament-select-table_table',
-        ];
     }
 }

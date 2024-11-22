@@ -40,7 +40,6 @@
     "autoload": {
         "psr-4": {
             "ElmudoDev\\FilamentSelectTable\\": "src/",
-            "ElmudoDev\\FilamentSelectTable\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
