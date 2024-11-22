@@ -34,7 +34,7 @@ class FilamentSelectTable extends Component implements HasForms, HasTable
 
     public ?string $componentId = null;
 
-    public array | int $selectedRecords;
+    public array | int | null $selectedRecords = null;
 
     public bool $isMultiple = false;
 

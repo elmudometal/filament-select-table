@@ -30,16 +30,19 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
         parent::setUp();
 
         $this->default([])
+            ->native(false)
             ->extraAlpineAttributes([
                 'x-on:filament-select-table.window' => '($event) => $wire.dispatchFormEvent(\'filament-select-table\', \'$getStatePath()\', $event.detail.record_ids)',
             ]);
 
         $this->afterStateHydrated(static function (FilamentSelectTable $component, $state) {
-            if (is_array($state)) {
-                return;
-            }
+            if ($component->isMultiple) {
+                if (is_array($state)) {
+                    return;
+                }
 
-            $component->state([]);
+                $component->state([]);
+            }
         });
 
         $this->registerListeners([
@@ -50,8 +53,12 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
                 }],
         ]);
 
-        $this->mutateDehydratedStateUsing(static function (?array $state): array {
-            return array_values($state ?? []);
+        $this->mutateDehydratedStateUsing(static function (FilamentSelectTable $component, array | int $state): array {
+            if ($component->isMultiple) {
+                return array_values($state ?? []);
+            }
+
+            return $state ?? 0;
         });
 
     }

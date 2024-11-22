@@ -17,37 +17,21 @@ You can install the package via composer:
 composer require elmudo-dev/filament-select-table
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="filament-select-table-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="filament-select-table-config"
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="filament-select-table-views"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
 
 ## Usage
 
 ```php
-$filamentSelectTable = new ElmudoDev\FilamentSelectTable();
-echo $filamentSelectTable->echoPhrase('Hello, ElmudoDev!');
+FilamentSelectTable::make('reviewer3_id')
+    ->live()
+    ->label('Tests')
+    ->multiple() // or option
+    ->labelRelationshipAdd('label')
+    ->titleRelationshipTable('Title')   
+    ->schema([
+        TextColumn::make('email')->label('email nuevo'),
+        TextColumn::make('name')->label('Nombre')->sortable(),
+    ])
+    >relationship('reviewer', 'name'),
 ```
 
 ## Testing
