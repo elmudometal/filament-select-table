@@ -47,12 +47,8 @@ class FilamentSelectTableServiceProvider extends PackageServiceProvider
         $this->registerLivewireComponents();
 
         FilamentAsset::registerScriptData(
-            $this->getScriptData(),
-            $this->getAssetPackageName()
+            $this->getScriptData()
         );
-
-        // Icon Registration
-        FilamentIcon::register($this->getIcons());
 
         // Testing
         Testable::mixin(new TestsFilamentSelectTable);
@@ -63,11 +59,6 @@ class FilamentSelectTableServiceProvider extends PackageServiceProvider
         \Livewire\Livewire::component('elmudo-dev::filament-select-table', FilamentSelectTable::class);
     }
 
-    protected function getAssetPackageName(): ?string
-    {
-        return 'elmudo-dev/filament-select-table';
-    }
-
     /**
      * @return array<class-string>
      */
@@ -76,14 +67,6 @@ class FilamentSelectTableServiceProvider extends PackageServiceProvider
         return [
             FilamentSelectTableCommand::class,
         ];
-    }
-
-    /**
-     * @return array<string>
-     */
-    protected function getIcons(): array
-    {
-        return [];
     }
 
     /**
