@@ -5,7 +5,6 @@ namespace ElmudoDev\FilamentSelectTable;
 use ElmudoDev\FilamentSelectTable\Commands\FilamentSelectTableCommand;
 use ElmudoDev\FilamentSelectTable\Testing\TestsFilamentSelectTable;
 use Filament\Support\Facades\FilamentAsset;
-use Filament\Support\Facades\FilamentIcon;
 use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
