@@ -87,7 +87,30 @@ class FilamentSelectTable extends Component implements HasForms, HasTable
         return <<<'HTML'
         <div>
             {{ $this->table }}
+            @script
+            <script>
+                document.addEventListener('trigger-select-records', function(event) {
+                    event.detail[0].records.forEach(record => {
+                        const checkbox = document.querySelector('tr[wire\\:key="' + event.detail[0].livewireId + '.table.records.' + record + '"] input[type="checkbox"]')
+                        checkbox.click()
+                        console.log(1);
+                    });
+                })
+            </script>
+            @endscript
         </div>
         HTML;
+    }
+
+    public function rendered()
+    {
+        $this->selectedRecords = [1];
+        $this->mountTableBulkAction('filament-select-add-relationship', [1]);
+        $this->dispatch('trigger-select-records', [
+            'records' => [1], // The IDs of your selected rows
+            'livewireId' => $this->id(), // Required to link to this specific component incase you need to have multiple of the same component or multiple components supporting preselected rows
+        ]);
+
+        $this->mountTableBulkAction('filament-select-add-relationship', [1]);
     }
 }
