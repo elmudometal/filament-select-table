@@ -14,7 +14,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 
-class FilamentSelectTable extends Select implements HasForms, HasTable
+class SelectTable extends Select implements HasForms, HasTable
 {
     use InteractsWithForms;
     use InteractsWithTable;
@@ -23,7 +23,7 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
 
     protected string | Htmlable | Closure | null $titleRelationshipTable;
 
-    protected array | Closure | null $schema;
+    protected Closure | string $schema;
 
     protected function setUp(): void
     {
@@ -35,7 +35,7 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
                 'x-on:filament-select-table.window' => '($event) => $wire.dispatchFormEvent(\'filament-select-table\', \'$getStatePath()\', $event.detail.record_ids)',
             ]);
 
-        $this->afterStateHydrated(static function (FilamentSelectTable $component, $state) {
+        $this->afterStateHydrated(static function (SelectTable $component, $state) {
             if ($component->isMultiple) {
                 if (is_array($state)) {
                     return;
@@ -47,13 +47,13 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
 
         $this->registerListeners([
             'filament-select-table' => [
-                function (FilamentSelectTable $component, $statePath, array | int $records) {
+                function (SelectTable $component, $statePath, array | int $records) {
                     $component->state($records);
                     $component->callAfterStateUpdated();
                 }],
         ]);
 
-        $this->mutateDehydratedStateUsing(static function (FilamentSelectTable $component, array | int $state): array {
+        $this->mutateDehydratedStateUsing(static function (SelectTable $component, array | int $state): array {
             if ($component->isMultiple) {
                 return array_values($state ?? []);
             }
@@ -71,7 +71,7 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
 
         $action = Action::make($this->getCreateOptionActionName())
             ->modalContent(
-                function (FilamentSelectTable $component) {
+                function (SelectTable $component) {
                     $componentName = \ElmudoDev\FilamentSelectTable\FilamentSelectTable::class;
 
                     return new HtmlString(
@@ -83,7 +83,7 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
                                 'labelRelationshipAdd' => $component->getLabelRelationshipAdd(),
                                 'titleRelationshipTable' => $component->titleRelationshipTable,
                                 'relationship' => $component->getRelationship() ? $component->getRelationship()->getModel() : null,
-                                'schema' => $this->evaluate($component->schema),
+                                'schema' => $component->schema,
                                 'isMultiple' => $component->isMultiple,
                                 'selectedRecords' => $component->getState(),
                                 'componentId' => $component->getLivewire()->getId(),
@@ -131,7 +131,7 @@ class FilamentSelectTable extends Select implements HasForms, HasTable
     /**
      * @param  array<Component> | Closure | null  $schema
      */
-    public function schema(array | Closure | null $schema): static
+    public function schema(mixed $schema): static
     {
         $this->schema = $schema;
 
