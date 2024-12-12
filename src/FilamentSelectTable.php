@@ -2,6 +2,7 @@
 
 namespace ElmudoDev\FilamentSelectTable;
 
+use Closure;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Actions\Action;
@@ -40,9 +41,6 @@ class FilamentSelectTable extends Component implements HasForms, HasTable
 
     public bool $isMultiple = false;
 
-    /**
-     * @var array<\Filament\Tables\Columns\> | Closure | null
-     */
     public mixed $schema;
 
     public function table(Table $table): Table
@@ -71,7 +69,7 @@ class FilamentSelectTable extends Component implements HasForms, HasTable
 
                         $livewire->dispatch('close-modal', id: $this->componentId . '-form-component-action');
                     })
-                    ->disabled(fn (Model $record) => $record->id == $this->selectedRecords)
+                    ->disabled(fn (Model $record) => $record->getKey() == $this->selectedRecords)
                     ->visible(! $this->isMultiple),
             ]);
     }

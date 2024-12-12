@@ -7,7 +7,6 @@ use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Tables\Columns\Component;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Contracts\Support\Htmlable;
@@ -55,10 +54,10 @@ class SelectTable extends Select implements HasForms, HasTable
 
         $this->mutateDehydratedStateUsing(static function (SelectTable $component, array | int $state): array {
             if ($component->isMultiple) {
-                return array_values($state ?? []);
+                return array_values($state);
             }
 
-            return $state ?? 0;
+            return $state;
         });
 
     }
@@ -82,7 +81,7 @@ class SelectTable extends Select implements HasForms, HasTable
                                 'ownerRecord' => $component->getRecord(),
                                 'labelRelationshipAdd' => $component->getLabelRelationshipAdd(),
                                 'titleRelationshipTable' => $component->titleRelationshipTable,
-                                'relationship' => $component->getRelationship() ? $component->getRelationship()->getModel() : null,
+                                'relationship' => $component->getRelationship()->getModel() ?? null,
                                 'schema' => $component->schema,
                                 'isMultiple' => $component->isMultiple,
                                 'selectedRecords' => $component->getState(),
@@ -128,9 +127,6 @@ class SelectTable extends Select implements HasForms, HasTable
         return $this;
     }
 
-    /**
-     * @param  array<Component> | Closure | null  $schema
-     */
     public function schema(mixed $schema): static
     {
         $this->schema = $schema;
