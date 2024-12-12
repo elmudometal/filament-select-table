@@ -6,8 +6,9 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/elmudo-dev/filament-select-table.svg?style=flat-square)](https://packagist.org/packages/elmudo-dev/filament-select-table)
 
 
+https://github.com/user-attachments/assets/bb93f802-617b-4535-ba66-ab4805219d4f
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+This plugin is an extension of the field select and allows you to open a table selection to choose elements from a relationship.
 
 ## Installation
 
