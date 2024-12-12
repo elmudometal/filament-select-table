@@ -24,14 +24,32 @@ composer require elmudo-dev/filament-select-table
 FilamentSelectTable::make('reviewer3_id')
     ->live()
     ->label('Tests')
-    ->multiple() // or option
+    ->multiple() // simple or multiple
     ->labelRelationshipAdd('label')
-    ->titleRelationshipTable('Title')   
-    ->schema([
-        TextColumn::make('email')->label('email nuevo'),
-        TextColumn::make('name')->label('Nombre')->sortable(),
-    ])
-    >relationship('reviewer', 'name'),
+    ->titleRelationshipTable('Title')
+    ->schema(TagsTableResource::class)
+    ->relationship('tags', 'tag'),
+```
+## Make TagsTableResource::class
+```php
+<?php
+
+namespace App\Filament\Resources\CourseResource;
+
+use Filament\Tables\Columns\TextColumn;
+
+class TagsTableResource
+{
+    public static function table(): array
+    {
+
+        return [
+            TextColumn::make('id')->label('id')->searchable(),
+            TextColumn::make('tag')->label('tag')->sortable(),
+        ];
+
+    }
+}
 ```
 
 ## Testing
